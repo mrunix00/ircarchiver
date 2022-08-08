@@ -20,9 +20,11 @@
 /* This is an IRC bot that saves IRC conversations */
 int
 main(int argc, char *argv[]) {
-	int err = 0,fd = 0;
+	int err = 0, fd = 0;
+	bool loggedin=false;
 	char *ip = malloc(100), *port = malloc(6), 
 	     *nick = malloc(32), *flocation = malloc(300);
+
 	ip = strdup("localhost");
 	port = strdup("6667");
 	nick = strdup("bender");
@@ -87,25 +89,35 @@ main(int argc, char *argv[]) {
 	free(ip);
 	free(nick);
 	
-	sleep(1);
-	for (int i = 0; i < argc; i++)
-		join(fd,argv[i]);
 	FILE *fp = fopen(flocation,"a+");
 	if (!fp) {
 		perror("Can't read file! Error: ");
 		return EXIT_FAILURE;
 	}
-
+	
 	int i=0,c=0;
 	char *buff=malloc(maxPacketSize);
 								
 	while(read(fd,&c,1)){
+		putchar(c);
 		if(c != '\n' && c != '\r'){buff[i++]=c;continue;}
 		else buff[i]='\0';
 		
 		IRCPacket packet;
 		getPacket(buff,&packet);
-		
+									
+		if(loggedin == false && packet.type != NULL){
+			if(strcmp(packet.type,"376") == 0 &&
+			strcmp(packet.content,":End of /MOTD command.")){
+				printf("Joining IRC Channels...\n");
+				loggedin = true;
+				
+				sleep(1);
+				for(int i = 0; i < argc; i++)
+					join(fd,argv[i]);
+			}
+		}
+
 		if(packet.type != NULL){
 			fp=fopen(flocation,"a+");
 			char *msg=parseMSG(packet);
