@@ -3,6 +3,7 @@
 
 #include <netdb.h>
 
+#include <ctype.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -21,7 +22,7 @@ int
 main(int argc, char *argv[]) {
 	int err = 0,fd = 0;
 	char *ip = malloc(100), *port = malloc(6), 
-	     *nick = malloc(60), *flocation = malloc(200);
+	     *nick = malloc(32), *flocation = malloc(300);
 	ip = strdup("localhost");
 	port = strdup("6667");
 	nick = strdup("bender");
@@ -38,6 +39,12 @@ main(int argc, char *argv[]) {
 				else ip=strdup(optarg);
 				break;
 			case 'p':
+				for(int i=0; i<strlen(optarg); i++){
+					if(!isdigit(optarg[0])){
+						printf("Invalid Port Number\n");
+						return EXIT_FAILURE;
+					}
+				}
 				if(atoi(optarg) > 65535){
 					printf("Port number should be 0-65535\n");
 					return EXIT_FAILURE;
@@ -45,13 +52,20 @@ main(int argc, char *argv[]) {
 				port=strdup(optarg);
 				break;
 			case 'n':
-				if(strlen(optarg)>60){
-					printf("Nickname should not be longer than 60 characters\n");
+				if(sizeof(optarg) >= 31){
+					printf("Nickname should not be longer than 31 characters\n");
 					return EXIT_FAILURE;
-				}				
+				}else if(isdigit(optarg[0])){
+					printf("Nickname should not start with a digit\n");
+					return EXIT_FAILURE;
+				}
 				nick=strdup(optarg);
 				break;
 			case 'o':
+				if(sizeof(optarg)>300){
+					printf("Output location is too long\n");
+					return EXIT_FAILURE;
+				}
 				flocation=strdup(optarg);
 				break;
 			case '?':
