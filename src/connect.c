@@ -60,7 +60,7 @@ join(int fd, char *channel){
 int
 pong(int fd, char *token){
 	char s[40];
-	sprintf(s,"PONG %s\r\n",token);
+	sprintf(s,"\rPONG :%s\r\n",token);
 	int err=write(fd,s,strlen(s));
 
 	return err;
