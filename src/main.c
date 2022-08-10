@@ -15,7 +15,7 @@
 #include "./include/irc-utils.h"
 #include "./include/utils.h"
 
-#define maxPacketSize 1000
+#define maxPacketSize 512
 
 /* This is an IRC bot that saves IRC conversations */
 int
@@ -94,35 +94,31 @@ main(int argc, char *argv[]) {
 		perror("Can't read file! Error: ");
 		return EXIT_FAILURE;
 	}
-	
+
 	int i=0,c=0;
 	char *buff=malloc(maxPacketSize);
 								
 	while(read(fd,&c,1)){
+		putchar(c);
 		if(c != '\n' && c != '\r'){buff[i++]=c;continue;}
 		else buff[i]='\0';
 		
 		IRCPacket packet;
 		getPacket(buff,&packet);
 									
-		if(loggedin == false && packet.type != NULL){
-			if(strcmp(packet.type,"376") == 0 &&
-			strcmp(packet.content,":End of /MOTD command.")){
-				printf("Joining IRC Channels...\n");
-				loggedin = true;
-				
-				sleep(1);
+		if(packet.type != NULL){
+			if(strcmp(packet.type,"376") == 0){
 				for(int i = 0; i < argc; i++)
 					join(fd,argv[i]);
+			}else if(strcmp(packet.type,"PING") == 0){
+				pong(fd,packet.content);
+			}else{
+				fp=fopen(flocation,"a+");
+				char *msg=parseMSG(packet);
+				printf("%s",msg);
+				fputs(msg,fp);
+				fclose(fp);
 			}
-		}
-
-		if(packet.type != NULL){
-			fp=fopen(flocation,"a+");
-			char *msg=parseMSG(packet);
-			printf("%s",msg);
-			fputs(msg,fp);
-			fclose(fp);
 		}
 		i=0;
 		memset(buff,0,strlen(buff));

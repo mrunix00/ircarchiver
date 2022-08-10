@@ -51,9 +51,17 @@ login(int fd, char *nick){
 int
 join(int fd, char *channel){
 	char s[40];
-	sprintf(s,"JOIN :#%s\n",channel);
+	sprintf(s,"\rJOIN :#%s\r\n",channel);
 	int err=write(fd,s,strlen(s));
 
 	return err;
 }
 
+int
+pong(int fd, char *token){
+	char s[40];
+	sprintf(s,"PONG %s\r\n",token);
+	int err=write(fd,s,strlen(s));
+
+	return err;
+}
