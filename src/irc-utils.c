@@ -27,6 +27,13 @@ getPacket(char *buff,IRCPacket *packet){
 
 			free(tmp);
 		}
+	}else if(buff[0] != 0){
+		packet->type=strtok(buff," ");
+		if(strcmp(packet->type,"PING") == 0){
+			packet->content=strtok(NULL,"\0");
+			packet->content++;
+		}
+		
 	}
 }
 
