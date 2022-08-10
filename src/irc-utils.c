@@ -20,7 +20,6 @@ getPacket(char *buff,IRCPacket *packet){
 		|| strcmp(packet->type,"JOIN") == 0){
 			char *tmp=malloc(128);
 			strcpy(tmp,packet->sender);
-
 			packet->sender=strtok(tmp,"!");
 			packet->realname=strtok(NULL,"@");
 			packet->hostname=strtok(NULL,"\0");
