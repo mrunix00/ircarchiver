@@ -17,20 +17,20 @@
 */
 int
 InitConnection(int *fd, char *ip, char *port){
-	struct addrinfo hints,*res;
-        
-        memset(&hints,0,sizeof(hints));
-        hints.ai_family=AF_INET;
-        hints.ai_socktype=SOCK_STREAM;
-        hints.ai_flags=AI_PASSIVE;
+    struct addrinfo hints,*res;
+    int err;                                                                    
+    memset(&hints,0,sizeof(hints));
+    hints.ai_family=AF_INET;
+    hints.ai_socktype=SOCK_STREAM;
+    hints.ai_flags=AI_PASSIVE;
 
-        getaddrinfo(ip,"6667",&hints,&res);
-        *fd = socket(res->ai_family,res->ai_socktype,
-			res->ai_protocol);
-        int err = connect(*fd,res->ai_addr,
-			res->ai_addrlen);
+    err=getaddrinfo(ip,port,&hints,&res);
+    if(err < 0) return err;
+    *fd = socket(res->ai_family,res->ai_socktype,res->ai_protocol);
+    if(fd < 0) return -1;
+    err = connect(*fd,res->ai_addr,res->ai_addrlen);
 
-        return err;
+    return err;
 }
 
 /*
@@ -39,7 +39,7 @@ InitConnection(int *fd, char *ip, char *port){
 int
 login(int fd, char *nick){
 	char s[100];
-	sprintf(s,"NICK %s\nUSER %s 0 * :realname\n",nick,nick);
+	sprintf(s,"\rNICK %s\r\nUSER %s 0 * :realname\r\n",nick,nick);
 	int err=write(fd,s,sizeof(s));
 
 	return err;

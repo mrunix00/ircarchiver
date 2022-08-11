@@ -22,8 +22,7 @@ int
 main(int argc, char *argv[]) {
 	int err = 0, fd = 0;
 	bool loggedin=false;
-	char *ip = malloc(100), *port = malloc(6), 
-	     *nick = malloc(32), *flocation = malloc(300);
+	char *ip, *port, *nick, *flocation;
 
 	ip = strdup("localhost");
 	port = strdup("6667");
@@ -42,7 +41,7 @@ main(int argc, char *argv[]) {
 				break;
 			case 'p':
 				for(int i=0; i<strlen(optarg); i++){
-					if(!isdigit(optarg[0])){
+					if(!isdigit(optarg[i])){
 						printf("Invalid Port Number\n");
 						return EXIT_FAILURE;
 					}
@@ -98,7 +97,7 @@ main(int argc, char *argv[]) {
 	int i=0,c=0;
 	char *buff=malloc(maxPacketSize);
 								
-	while(read(fd,&c,1)){
+	while(err = read(fd,&c,1)){
 		if(c != '\n' && c != '\r'){buff[i++]=c;continue;}
 		else buff[i]='\0';
 		
@@ -122,4 +121,6 @@ main(int argc, char *argv[]) {
 		i=0;
 		memset(buff,0,strlen(buff));
 	}
+    if(err == -1)
+        perror("Disconnected: ");
 }
