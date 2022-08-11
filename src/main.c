@@ -97,7 +97,7 @@ main(int argc, char *argv[]) {
 	int i=0,c=0;
 	char *buff=malloc(maxPacketSize);
 								
-	while(err = read(fd,&c,1)){
+	while((err = read(fd,&c,1))){
 		if(c != '\n' && c != '\r'){buff[i++]=c;continue;}
 		else buff[i]='\0';
 		
