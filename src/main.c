@@ -13,9 +13,12 @@
 
 #include "./include/connect.h"
 #include "./include/irc-utils.h"
-#include "./include/utils.h"
 
 #define maxPacketSize 512
+
+void usage(){
+        printf("usage:\tircarchiver [-h host] [-p port] [-n nick]\n\t[-o file] channel\n");
+}
 
 /* This is an IRC bot that saves IRC conversations */
 int
