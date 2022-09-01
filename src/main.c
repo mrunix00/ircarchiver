@@ -84,10 +84,14 @@ main(int argc, char *argv[]) {
 	if (argc < 1) {usage();return EXIT_FAILURE;}
 								
 	printf("Connecting to %s:%s\n",ip,port);
-	if ((err = InitConnection(&fd,ip,port)) != -1)
-		printf("Connected\n"); else perror("ERROR: ");
+	if (!(err = InitConnection(&fd,ip,port)))
+		printf("Connected\n"); 
+  else{
+    fprintf(stderr,"ERROR: %s\n", gai_strerror(err));
+    return EXIT_FAILURE;
+  }
 	if ((err = login(fd,nick)) != -1) printf("Logged in\n");
-	else perror("ERROR: ");
+	else{perror("ERROR");return EXIT_FAILURE;}
 	free(ip);
 	free(nick);
 	
@@ -98,7 +102,7 @@ main(int argc, char *argv[]) {
 	}
 
 	int i=0,c=0;
-	char *buff=malloc(maxPacketSize);
+	char buff[maxPacketSize];
 								
 	while((err = read(fd,&c,1))){
 		if(c != '\n' && c != '\r'){buff[i++]=c;continue;}
@@ -118,12 +122,11 @@ main(int argc, char *argv[]) {
 				char *msg=parseMSG(packet);
 				printf("%s",msg);
 				fputs(msg,fp);
-				fclose(fp);
+        fclose(fp);
 			}
 		}
-		i=0;
-		memset(buff,0,strlen(buff));
+		i = 0;
+    buff[0] = '\0';
 	}
-    if(err == -1)
-        perror("Disconnected: ");
+    if(err == -1) perror("Disconnected: ");
 }

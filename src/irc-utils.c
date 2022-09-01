@@ -18,13 +18,9 @@ getPacket(char *buff,IRCPacket *packet){
 			packet->content++;
 		if(strcmp(packet->type,"PRIVMSG") == 0 
 		|| strcmp(packet->type,"JOIN") == 0){
-			char *tmp=malloc(128);
-			strcpy(tmp,packet->sender);
-			packet->sender=strtok(tmp,"!");
+			packet->sender=strtok(packet->sender,"!");
 			packet->realname=strtok(NULL,"@");
 			packet->hostname=strtok(NULL,"\0");
-
-			free(tmp);
 		}
 	}else if(buff[0] != 0){
 		packet->type=strtok(buff," ");
@@ -32,16 +28,13 @@ getPacket(char *buff,IRCPacket *packet){
 			packet->content=strtok(NULL,"\0");
 			packet->content++;
 		}
-		
 	}
 }
 
 char*
 parseMSG(IRCPacket packet){
-								
 	time_t now = time(NULL);
-	char *tmstr=malloc(50);
-	tmstr=strdup(ctime(&now));
+	char *tmstr = strdup(ctime(&now));
 	tmstr[strlen(tmstr)-1]='\0';
 	if(strcmp(packet.type,"PRIVMSG") == 0){
 		char *s=malloc(1000);

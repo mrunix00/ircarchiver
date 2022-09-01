@@ -25,7 +25,7 @@ InitConnection(int *fd, char *ip, char *port){
     hints.ai_flags=AI_PASSIVE;
 
     err=getaddrinfo(ip,port,&hints,&res);
-    if(err < 0) return err;
+    if(err > 0) return err;
     *fd = socket(res->ai_family,res->ai_socktype,res->ai_protocol);
     if(fd < 0) return -1;
     err = connect(*fd,res->ai_addr,res->ai_addrlen);
